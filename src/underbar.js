@@ -199,9 +199,14 @@ var _ = { };
   // provided, provide a default one
   _.some = function(collection, iterator) {
     // TIP: There's a very clever way to re-use every() here.
+    var pass = false;
     _.every(collection, function(item) {
-      
+      if(iterator === undefined)
+          return pass;
+      if (iterator(item))
+        pass = true;
     })
+    return pass;
   };
 
 
