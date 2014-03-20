@@ -273,6 +273,11 @@ var _ = { };
   // already computed the result for the given argument and return that value
   // instead if possible.
   _.memoize = function(func) {
+    var arg = Array.prototype.slice.call(arguments, 1);
+    var store = {arg : func(arg)};
+    return function(newArg) {
+      return newArg in store ? store[newArg] : func.call(this, newArg);
+    };
   };
 
   // Delays a function for the given number of milliseconds, and then calls
