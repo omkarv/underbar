@@ -63,13 +63,11 @@ var _ = { };
     // implemented for you. Instead of using a standard `for` loop, though,
     // it uses the iteration helper `each`, which you will need to write.
     var result = -1;
-
     _.each(array, function(item, index) {
       if (item === target && result === -1) {
         result = index;
       }
     });
-
     return result;
   };
 
@@ -134,19 +132,10 @@ var _ = { };
   // Calls the method named by methodName on each value in the list.
   // Note: you will nead to learn a bit about .apply to complete this.
   _.invoke = function(collection, functionOrKey, args) {
-    var output = [ ];
-    _.each(collection, function(item){
-    if (typeof functionOrKey === 'function')
-    {
-      var temp = functionOrKey;
-      output.push(temp.call(item));
-    } 
-    else if (typeof functionOrKey === 'string')
-    {
-         output.push(String.prototype[functionOrKey].call(item));
-    }
+    var isFunc = (typeof functionOrKey === 'function');
+    return _.map(collection, function(item){
+    return typeof functionOrKey === 'function' ? functionOrKey.apply(item, args): item[functionOrKey].apply(item, args);
   });
-  return output;
   };
 
   // Reduces an array or object to a single value by repetitively calling
@@ -174,10 +163,7 @@ var _ = { };
     // TIP: Many iteration problems can be most easily expressed in
     // terms of reduce(). Here's a freebie to demonstrate!
     return _.reduce(collection, function(wasFound, item) {
-      if (wasFound) {
-        return true;
-      }
-      return item === target;
+        return wasFound ? true : item === target;
     }, false);
   };
 
@@ -186,12 +172,9 @@ var _ = { };
   _.every = function(collection, iterator) {
     // TIP: Try re-using reduce() here.
     return _.reduce(collection, function(result, item){
-      if(iterator === undefined)
+      if(iterator === undefined) // because !undefined === true
           return result;
-      if (!iterator(item))
-        return false
-      else
-        return result;
+      return !iterator(item) ? false : result;
     }, true);
   };
 
@@ -201,8 +184,6 @@ var _ = { };
     // TIP: There's a very clever way to re-use every() here.
     var pass = false;
     _.every(collection, function(item) {
-      if(iterator === undefined)
-          return pass;
       if (iterator(item))
         pass = true;
     })
@@ -236,7 +217,6 @@ var _ = { };
     for (var i = 1; i < arguments.length; i++) {
       for (var j in arguments[i]) {
        obj[j] = arguments[i][j];
-       //console.log(obj);
       }
     }
     return obj;
@@ -245,12 +225,12 @@ var _ = { };
   // Like extend, but doesn't ever overwrite a key that already
   // exists in obj
   _.defaults = function(obj) {
-    for (var i = 1; i < arguments.length; i++) {
-      for (var j in arguments[i]) {
-       if ((j in obj) === false)
-        obj[j] = arguments[i][j];
+    _.each(Array.prototype.slice.call(arguments, 1), function(item) {
+      for (var property in item) {
+       if (!(property in obj))
+        obj[property] = item[property];
       }
-    }
+    });
     return obj;
   };
 
