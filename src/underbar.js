@@ -2,7 +2,7 @@
 
 var _ = { };
 
-(function() {
+(function()   {
 
   // Returns whatever value is passed as the argument. This function doesn't
   // seem very useful, but remember it--if a function needs to provide an
@@ -47,11 +47,12 @@ var _ = { };
           iterator(collection[i], i, collection);
         }
       }
-    else if (typeof(collection) === "object") 
+    else if (typeof(collection) === "object")
      {
-      for (var j in collection) 
+      for (var j in collection)
       {
-        iterator(collection[j], j, collection);
+        if (collection.hasOwnProperty(j))
+          iterator(collection[j], j, collection);
       }
     }
   };
@@ -77,7 +78,7 @@ var _ = { };
     _.each(collection, function(item){
       if (test(item))
         output.push(item);
-    })
+    });
     return output;
   };
 
@@ -132,9 +133,8 @@ var _ = { };
   // Calls the method named by methodName on each value in the list.
   // Note: you will nead to learn a bit about .apply to complete this.
   _.invoke = function(collection, functionOrKey, args) {
-    var isFunc = (typeof functionOrKey === 'function');
     return _.map(collection, function(item){
-    return typeof functionOrKey === 'function' ? functionOrKey.apply(item, args): item[functionOrKey].apply(item, args);
+    return typeof functionOrKey === "function" ? functionOrKey.apply(item, args): item[functionOrKey].apply(item, args);
   });
   };
 
@@ -185,8 +185,9 @@ var _ = { };
     var pass = false;
     _.every(collection, function(item) {
       if (iterator(item))
+        
         pass = true;
-    })
+    });
     return pass;
   };
 
@@ -216,7 +217,8 @@ var _ = { };
    // console.log(arguments.length);
     for (var i = 1; i < arguments.length; i++) {
       for (var j in arguments[i]) {
-       obj[j] = arguments[i][j];
+       if (arguments[i].hasOwnProperty(j))
+        obj[j] = arguments[i][j];
       }
     }
     return obj;
@@ -317,7 +319,7 @@ var _ = { };
           write = true;
         }
       }
-      };
+      }
     return output;
   };
 
