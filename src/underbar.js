@@ -29,8 +29,9 @@ var _ = { };
   // Like first, but for the last elements. If n is undefined, return just the
   // last element.
   _.last = function(array, n) {
-             if(n > array.length)
+             if(n > array.length){
               n = array.length;
+             }
     return n === undefined ? array[array.length-1] : array.slice(array.length-n, array.length);
   };
 
@@ -76,8 +77,9 @@ var _ = { };
   _.filter = function(collection, test) {
     var output = [];
     _.each(collection, function(item){
-      if (test(item))
+      if (test(item)){
         output.push(item);
+      }
     });
     return output;
   };
@@ -92,9 +94,12 @@ var _ = { };
   // Produce a duplicate-free version of the array.
   _.uniq = function(array) {
     var output = [];
-    _.each(array, function(item) {
-      if(output.indexOf(item) === -1)
+    var occurred = {};
+    _.each(array, function(item){
+      if(!(item in occurred)){
         output.push(item);
+        occurred[item] = item;
+      }
     });
     return output;
   };
@@ -189,17 +194,13 @@ var _ = { };
   // Determine whether any of the elements pass a truth test. If no iterator is
   // provided, provide a default one
   _.some = function(collection, iterator) {
-    // TIP: There's a very clever way to re-use every() here.
-    var pass = false;
-    _.every(collection, function(item) {
-      if (iterator === undefined){
-        if (item)
-          pass = true;
-      }else if (iterator(item))
-        pass = true;
+    // TIP: There's a very clever way to re-use every() here.  
+    //deMorgans theorem - A'||B' === !(A&B&C)  (since A&B&C === !(A'||B'||C')) 
+    return !_.every(collection, function(item) {
+      iterator || (iterator = _.identity);
+      return !iterator(item);
     });
-    return pass;
-  }; 
+  };
 
   //return !every return opposite return  
 
