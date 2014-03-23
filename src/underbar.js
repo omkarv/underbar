@@ -42,7 +42,7 @@ var _ = { };
   _.each = function(collection, iterator) {
     if (Array.isArray(collection))
       {
-        for(var i = 0; i < collection.length; i++)
+        for(var i = 0; i < collection.length; i++) //
         {
           iterator(collection[i], i, collection);
         }
@@ -98,7 +98,7 @@ var _ = { };
     });
     return output;
   };
-
+//use an object instead 
 
   // Return the results of applying an iterator to each element.
   _.map = function(array, iterator) {
@@ -152,11 +152,20 @@ var _ = { };
   //     return total + number;
   //   }, 0); // should be 6
   _.reduce = function(collection, iterator, accumulator) {
+    var initial = arguments.length > 2;
     _.each(collection, function(item) {
-    accumulator = iterator(accumulator, item);
+    //if (accumulator === undefined)
+    if (!initial) {
+      accumulator = item;
+      initial = true;
+    }
+    if (iterator === undefined)
+      return item;
+    else
+      accumulator = iterator(accumulator, item);
     });
     return accumulator;
-  };
+  }; // accumlator or 0 ... test is wrong  - does it initizlisze  argument.length === ..  set accumlator to item when no accumulator
 
   // Determine if the array or object contains a given value (using `===`).
   _.contains = function(collection, target) {
@@ -172,8 +181,7 @@ var _ = { };
   _.every = function(collection, iterator) {
     // TIP: Try re-using reduce() here.
     return _.reduce(collection, function(result, item){
-      if(iterator === undefined) // because !undefined === true
-          return result;
+      iterator || (iterator = _.identity);
       return !iterator(item) ? false : result;
     }, true);
   };
@@ -184,12 +192,16 @@ var _ = { };
     // TIP: There's a very clever way to re-use every() here.
     var pass = false;
     _.every(collection, function(item) {
-      if (iterator(item))
-        
+      if (iterator === undefined){
+        if (item)
+          pass = true;
+      }else if (iterator(item))
         pass = true;
     });
     return pass;
-  };
+  }; 
+
+  //return !every return opposite return  
 
 
   /**
@@ -215,26 +227,29 @@ var _ = { };
     //ignore first argument
     //for each object loop through and add object manually 
    // console.log(arguments.length);
-    for (var i = 1; i < arguments.length; i++) {
-      for (var j in arguments[i]) {
-       if (arguments[i].hasOwnProperty(j))
-        obj[j] = arguments[i][j];
-      }
-    }
+      var args = Array.prototype.slice.call(arguments,1);
+      _.each(args, function(item) {
+        _.each(item, function(value ,key){
+        if (item.hasOwnProperty(key))
+          obj[key] = item[key];
+        });
+      });
     return obj;
-  };
+  };// refactor using each
 
   // Like extend, but doesn't ever overwrite a key that already
   // exists in obj
   _.defaults = function(obj) {
-    _.each(Array.prototype.slice.call(arguments, 1), function(item) {
-      for (var property in item) {
-       if (!(property in obj))
-        obj[property] = item[property];
-      }
+    var args = Array.prototype.slice.call(arguments, 1);
+    _.each(args, function(item) {
+      _.each(item, function(property, key){
+       if (!(key in obj))
+        obj[key] = item[key];
+      });
     });
     return obj;
   };
+  //refactor using each
 
 
   /**
@@ -280,7 +295,7 @@ var _ = { };
     return function(newArg) {
       return newArg in store ? store[newArg] : func.call(this, newArg);
     };
-  };
+  }; //simpler way is to create a serialization / JSON.stringified memoize
 
   // Delays a function for the given number of milliseconds, and then calls
   // it with the arguments supplied.
@@ -290,8 +305,9 @@ var _ = { };
   // call someFunction('a', 'b') after 500ms
   _.delay = function(func, wait) {
     var args =  Array.prototype.slice.call(arguments, 2);
-    var closure = function(){return func.apply(null, args);};
-    return args.length ? setTimeout(closure, wait): setTimeout(func, wait) ;
+    return setTimeout(function(){
+      return func.apply(null, args);
+    }, wait);
   };
 
 
