@@ -352,6 +352,21 @@ var _ = { };
   // of that string. For example, _.sortBy(people, 'name') should sort
   // an array of people by their name.
   _.sortBy = function(collection, iterator) {
+    var iterIOMap = {};
+    var mappedCollection = _.map(collection, function(element){
+      if(typeof iterator === 'function') {
+        iterIOMap[iterator(element)] = element;
+        return iterator(element);
+      } else if(typeof iterator === 'string') {
+        iterIOMap[element[iterator]] = element;
+        return element[iterator];
+      }
+    });
+    mappedCollection = mappedCollection.sort();
+    return _.map(mappedCollection, function(item){
+      return iterIOMap[item];
+     });
+
   };
 
   // Zip together two or more arrays with elements of the same index
@@ -360,6 +375,19 @@ var _ = { };
   // Example:
   // _.zip(['a','b','c','d'], [1,2,3]) returns [['a',1], ['b',2], ['c',3], ['d',undefined]]
   _.zip = function() {
+    // go through all arrays and find the longest - set all output arrays to be this long
+    var noArrays = arguments.length;
+    var largestArrayLength = _.reduce(arguments, function(memo, arr) {
+        return arr.length > memo ? arr.length : memo;
+        }, 0);
+    var output = [];
+    _.each(arguments, function(subArray) {
+        for(var i = 0; i < largestArrayLength; i++) {
+           !output[i] ? output.push([subArray[i]]) : output[i].push(subArray[i]);
+        }
+    });
+    return output;
+
   };
 
   // Takes a multidimensional array and converts it to a one-dimensional array.
@@ -367,6 +395,10 @@ var _ = { };
   //
   // Hint: Use Array.isArray to check if something is an array
   _.flatten = function(nestedArray, result) {
+    var output = [];
+    _.each(nestedArray, function(element) {
+    });
+    return output.join('').split('');
   };
 
   // Takes an arbitrary number of arrays and produces an array that contains
