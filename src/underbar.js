@@ -367,7 +367,6 @@ var _ = { };
         if(!iterIOMap[element[iterator]]) {
           iterIOMap[element[iterator]] = [element];
         }else {
-          console.log('called');
           iterIOMap[element[iterator]].push(element);
         }
         return element[iterator];
@@ -418,10 +417,11 @@ var _ = { };
   //
   // Hint: Use Array.isArray to check if something is an array
   _.flatten = function(nestedArray, result) {
-    var output = [];
-    _.each(nestedArray, function(element) {
+    var output = (result === undefined) ? [ ] : result;
+    _.map(nestedArray, function(element) {
+      Array.isArray(element) ? _.flatten(element, output) : output.push(element);
     });
-    return output.join('').split('');
+    return output;
   };
 
   // Takes an arbitrary number of arrays and produces an array that contains
