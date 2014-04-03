@@ -457,11 +457,25 @@ var _ = { };
    * =================
    */
 
-  // Returns a function, that, when invoked, will only be triggered at most once
+  // Returns a function, thatwhen invoked, will only be triggered at most once
   // during a given window of time.
   //
   // See the Underbar readme for details.
   _.throttle = function(func, wait) {
+
+    var runRecently = false;
+    var result;
+
+    return function() {
+      if (!runRecently) {
+        result = func.apply(this, arguments);
+        runRecently = true;
+        setTimeout(function() { 
+           runRecently = false;
+        }, wait);
+      }
+      return result;
+    };
   };
 
 }).call(this);
