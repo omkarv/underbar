@@ -427,11 +427,28 @@ var _ = { };
   // Takes an arbitrary number of arrays and produces an array that contains
   // every item shared between all the passed-in arrays.
   _.intersection = function() {
+    var lookup = { };
+    var intersection = [ ];
+    _.each(arguments, function(subArray){
+        _.each(subArray, function(element){
+          if(lookup[element]){
+            lookup[element] > 1 ? 0 : intersection.push(element);
+            lookup[element] += 1;
+          }else {
+            lookup[element] = 1;
+          }
+        });
+    });
+    return intersection;
   };
 
   // Take the difference between one array and a number of other arrays.
   // Only the elements present in just the first array will remain.
   _.difference = function(array) {
+    var intersection = _.intersection.apply(null, arguments);
+    return _.filter(array, function(element){
+        return intersection.indexOf(element) === -1;
+    });
   };
 
 
