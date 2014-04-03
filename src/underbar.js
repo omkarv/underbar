@@ -354,17 +354,40 @@ var _ = { };
   _.sortBy = function(collection, iterator) {
     var iterIOMap = {};
     var mappedCollection = _.map(collection, function(element){
+
       if(typeof iterator === 'function') {
-        iterIOMap[iterator(element)] = element;
+        
+        if (!iterIOMap[iterator(element)]) {
+         iterIOMap[iterator(element)] =  [element];
+        }else {
+         iterIOMap[iterator(element)].push(element);
+        }
         return iterator(element);
       } else if(typeof iterator === 'string') {
-        iterIOMap[element[iterator]] = element;
+        if(!iterIOMap[element[iterator]]) {
+          iterIOMap[element[iterator]] = [element];
+        }else {
+          console.log('called');
+          iterIOMap[element[iterator]].push(element);
+        }
         return element[iterator];
       }
     });
+    var counter = 0;
+    var lastItem;
     mappedCollection = mappedCollection.sort();
     return _.map(mappedCollection, function(item){
-      return iterIOMap[item];
+      if (iterIOMap[item].length > 1) {
+         if(item === lastItem) {
+          counter += 1;
+         }else {
+          counter = 0;
+         }
+         lastItem = item;
+         return iterIOMap[item][counter];
+      }else {
+         return iterIOMap[item][0];
+      }
      });
 
   };
