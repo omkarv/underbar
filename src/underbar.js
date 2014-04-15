@@ -469,11 +469,11 @@ var _ = { };
     return function() {
       if (!runRecently) {
         result = func.apply(this, arguments);
-       // console.log(result);
+        console.log(this);
         runRecently = true;
         setTimeout(function() { 
            runRecently = false;
-        }, wait); 
+        }, wait);
       }
       return result;
     };
